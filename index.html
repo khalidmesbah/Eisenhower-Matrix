@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eisenhower Matrix</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://code.iconify.design/iconify-icon/1.0.1/iconify-icon.min.js"></script>
+    <script src="js/script.js" defer></script>
+  </head>
+  <body>
+    <div class="top-bar">
+      <div class="side">Urgent</div>
+      <div class="side">Not Urgent</div>
+    </div>
+    <div class="left-bar">
+      <div class="side">Not Important</div>
+      <div class="side">Important</div>
+    </div>
+    <div class="matrix">
+      <div class="quadrant">
+        <div class="side-bar">
+          <div class="icon-wrapper" id="add-to-quadrant-do">
+            <iconify-icon icon="carbon:add-alt"></iconify-icon>
+          </div>
+          <div class="icon-wrapper" id="shuffle-quadrant-do">
+            <iconify-icon icon="bx:shuffle"></iconify-icon>
+          </div>
+          <div class="label">do</div>
+        </div>
+        <div class="content do"></div>
+      </div>
+      <div class="quadrant">
+        <div class="side-bar">
+          <div class="icon-wrapper" id="add-to-quadrant-schedule">
+            <iconify-icon icon="carbon:add-alt"></iconify-icon>
+          </div>
+          <div class="icon-wrapper" id="shuffle-quadrant-schedule">
+            <iconify-icon icon="bx:shuffle"></iconify-icon>
+          </div>
+          <div class="label">schedule</div>
+        </div>
+        <div class="content schedule"></div>
+      </div>
+      <div class="quadrant">
+        <div class="side-bar">
+          <div class="icon-wrapper" id="add-to-quadrant-delegate">
+            <iconify-icon icon="carbon:add-alt"></iconify-icon>
+          </div>
+          <div class="icon-wrapper" id="shuffle-quadrant-delegate">
+            <iconify-icon icon="bx:shuffle"></iconify-icon>
+          </div>
+          <div class="label">delegate</div>
+        </div>
+        <div class="content delegate"></div>
+      </div>
+      <div class="quadrant">
+        <div class="side-bar">
+          <div class="icon-wrapper" id="add-to-quadrant-delete">
+            <iconify-icon icon="carbon:add-alt"></iconify-icon>
+          </div>
+          <div class="icon-wrapper" id="shuffle-quadrant-delete">
+            <iconify-icon icon="bx:shuffle"></iconify-icon>
+          </div>
+          <div class="label">delete</div>
+        </div>
+        <div class="content delete"></div>
+      </div>
+    </div>
+  </body>
+</html>
