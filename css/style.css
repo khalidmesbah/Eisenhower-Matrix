@@ -51,6 +51,11 @@ body {
   overflow: hidden;
   display: flex;
 }
+[draggable="true"] {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
 .side-bar {
   position: sticky;
   width: 50px;

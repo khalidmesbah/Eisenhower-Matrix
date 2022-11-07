@@ -10,34 +10,63 @@ const deleteQuadrantBtn = document.getElementById("add-to-quadrant-delete");
 
 const addTask = (quadrant, task) => {
   const p = document.createElement("p");
+  const textSpan = document.createElement("span");
+  const deleteSpan = document.createElement("span");
+  deleteSpan.textContent = "X";
+  deleteSpan.style.cssText = `
+  border:1px solid orange;
+  `;
+  deleteSpan.addEventListener(`click`, () => {
+    p.remove();
+    storeToLocalStorage();
+  });
   p.draggable = true;
-  p.textContent = task;
+  textSpan.textContent = task;
+  textSpan.className = `text`;
+  p.appendChild(textSpan);
+  p.appendChild(deleteSpan);
   quadrant.appendChild(p);
+};
+
+const shuffleTasks = (quadrant) => {
+  const theQuadrant = document.querySelector(`.${quadrant}`);
+  const tasks = [...theQuadrant.children].map(
+    (e) => e.querySelector(".text").textContent
+  );
+  theQuadrant.innerHTML = ``;
+  for (let i = tasks.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tasks[i], tasks[j]] = [tasks[j], tasks[i]];
+  }
+  for (let i = 0; i < tasks.length; i++) {
+    addTask(theQuadrant, tasks[i]);
+  }
+  storeToLocalStorage();
 };
 
 // store to local storage
 
 const storeQuadrantDo = () => {
-  const tasks = [...document.querySelector(".do").querySelectorAll("p")].map(
-    (e) => e.textContent
-  );
+  const tasks = [
+    ...document.querySelector(".do").querySelectorAll("p span.text"),
+  ].map((e) => e.textContent);
   localStorage.do = JSON.stringify(tasks);
 };
 const storeQuadrantSchedule = () => {
   const tasks = [
-    ...document.querySelector(".schedule").querySelectorAll("p"),
+    ...document.querySelector(".schedule").querySelectorAll("p span.text"),
   ].map((e) => e.textContent);
   localStorage.schedule = JSON.stringify(tasks);
 };
 const storeQuadrantDelegate = () => {
   const tasks = [
-    ...document.querySelector(".delegate").querySelectorAll("p"),
+    ...document.querySelector(".delegate").querySelectorAll("p span.text"),
   ].map((e) => e.textContent);
   localStorage.delegate = JSON.stringify(tasks);
 };
 const storeQuadrantDelete = () => {
   const tasks = [
-    ...document.querySelector(".delete").querySelectorAll("p"),
+    ...document.querySelector(".delete").querySelectorAll("p span.text"),
   ].map((e) => e.textContent);
   localStorage.delete = JSON.stringify(tasks);
 };
@@ -98,6 +127,13 @@ deleteQuadrantBtn.addEventListener(`click`, () => {
   addTask(deleteQuadrant, task);
   storeQuadrantDelete();
   refresh();
+});
+
+const shuffleQuadrantBtns = document.querySelectorAll("[id^=shuffle-quadrant]");
+shuffleQuadrantBtns.forEach((btn) => {
+  btn.addEventListener(`click`, () => {
+    shuffleTasks(btn.id.split("-")[2]);
+  });
 });
 
 /* logic */
