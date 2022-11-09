@@ -8,14 +8,49 @@ const scheduleQuadrantBtn = document.getElementById("add-to-quadrant-schedule");
 const delegateQuadrantBtn = document.getElementById("add-to-quadrant-delegate");
 const deleteQuadrantBtn = document.getElementById("add-to-quadrant-delete");
 
+function detectBrowser() {
+  let userAgent = navigator.userAgent;
+  let browserName;
+
+  if (userAgent.match(/chrome|chromium|crios/i)) {
+    browserName = "chrome";
+  } else if (userAgent.match(/firefox|fxios/i)) {
+    browserName = "firefox";
+  } else if (userAgent.match(/safari/i)) {
+    browserName = "safari";
+  } else if (userAgent.match(/opr\//i)) {
+    browserName = "opera";
+  } else if (userAgent.match(/edg/i)) {
+    browserName = "edge";
+  } else {
+    browserName = "No browser detection";
+  }
+
+  return browserName;
+}
+const getTasks = (quadrant) => {
+  if (detectBrowser === "firefox") {
+    if (!localStorage[quadrant]) {
+      localStorage[quadrant] = "";
+      return [];
+    }
+    return localStorage[quadrant].split(",");
+  } else {
+    if (!localStorage[quadrant]) {
+      localStorage[quadrant] = JSON.stringify([]);
+      return [];
+    }
+    return JSON.parse(localStorage[quadrant]);
+  }
+};
+
 const addTask = (quadrant, task) => {
   const p = document.createElement("p");
   const textSpan = document.createElement("span");
   const deleteSpan = document.createElement("span");
-  deleteSpan.textContent = "X";
-  deleteSpan.style.cssText = `
-  border:1px solid orange;
-  `;
+  deleteSpan.textContent = "❌";
+  deleteSpan.style.cursor = "pointer";
+  deleteSpan.style.paddingInline = "5px";
   deleteSpan.addEventListener(`click`, () => {
     p.remove();
     storeToLocalStorage();
@@ -27,6 +62,52 @@ const addTask = (quadrant, task) => {
   p.appendChild(deleteSpan);
   quadrant.appendChild(p);
 };
+
+const addSpecialTask = (quadrant, task) => {
+  const p = document.createElement("p");
+  p.className = "special";
+  p.style.background = `gold`;
+  p.style.color = `#333`;
+  p.style.fontWeight = `bolder`;
+  const textSpan = document.createElement("span");
+  const deleteSpan = document.createElement("span");
+  deleteSpan.textContent = "❌";
+  deleteSpan.style.cursor = "pointer";
+  deleteSpan.style.paddingInline = "5px";
+  deleteSpan.addEventListener(`click`, () => {
+    p.remove();
+    storeToLocalStorage();
+  });
+  p.draggable = true;
+  textSpan.textContent = task;
+  textSpan.className = `text`;
+  p.appendChild(textSpan);
+  p.appendChild(deleteSpan);
+  quadrant.appendChild(p);
+};
+
+const noonTasks = [
+  "1 Page Quran",
+  "Morning's Azkar",
+  "Dua",
+  "2 Hours For The College",
+];
+const afterNoonTasks = ["Asking Of Forgiveness"];
+const eveningTasks = ["Night's Azkar"];
+
+(() => {
+  const time = new Date().getHours();
+  if (time > 5 && time <= 12) {
+    localStorage.special = JSON.stringify(noonTasks);
+  } else if (time > 12 && time <= 17) {
+    localStorage.special = JSON.stringify(afterNoonTasks);
+  } else {
+    localStorage.special = JSON.stringify(eveningTasks);
+  }
+  getTasks("special").forEach((task) => {
+    addSpecialTask(doQuadrant, task);
+  });
+})();
 
 const shuffleTasks = (quadrant) => {
   const theQuadrant = document.querySelector(`.${quadrant}`);
@@ -42,31 +123,40 @@ const shuffleTasks = (quadrant) => {
     addTask(theQuadrant, tasks[i]);
   }
   storeToLocalStorage();
+  refresh();
 };
 
 // store to local storage
 
 const storeQuadrantDo = () => {
   const tasks = [
-    ...document.querySelector(".do").querySelectorAll("p span.text"),
+    ...document
+      .querySelector(".do")
+      .querySelectorAll("p:not(.special) span.text"),
   ].map((e) => e.textContent);
   localStorage.do = JSON.stringify(tasks);
 };
 const storeQuadrantSchedule = () => {
   const tasks = [
-    ...document.querySelector(".schedule").querySelectorAll("p span.text"),
+    ...document
+      .querySelector(".schedule")
+      .querySelectorAll("p:not(.special) span.text"),
   ].map((e) => e.textContent);
   localStorage.schedule = JSON.stringify(tasks);
 };
 const storeQuadrantDelegate = () => {
   const tasks = [
-    ...document.querySelector(".delegate").querySelectorAll("p span.text"),
+    ...document
+      .querySelector(".delegate")
+      .querySelectorAll("p:not(.special) span.text"),
   ].map((e) => e.textContent);
   localStorage.delegate = JSON.stringify(tasks);
 };
 const storeQuadrantDelete = () => {
   const tasks = [
-    ...document.querySelector(".delete").querySelectorAll("p span.text"),
+    ...document
+      .querySelector(".delete")
+      .querySelectorAll("p:not(.special) span.text"),
   ].map((e) => e.textContent);
   localStorage.delete = JSON.stringify(tasks);
 };
@@ -80,22 +170,10 @@ const storeToLocalStorage = () => {
 
 // retrieve from local storage
 (() => {
-  localStorage.do &&
-    [...JSON.parse(localStorage.do)].forEach((task) =>
-      addTask(doQuadrant, task)
-    );
-  localStorage.schedule &&
-    [...JSON.parse(localStorage.schedule)].forEach((task) =>
-      addTask(scheduleQuadrant, task)
-    );
-  localStorage.delegate &&
-    [...JSON.parse(localStorage.delegate)].forEach((task) =>
-      addTask(delegateQuadrant, task)
-    );
-  localStorage.delete &&
-    [...JSON.parse(localStorage.delete)].forEach((task) =>
-      addTask(deleteQuadrant, task)
-    );
+  getTasks("do").forEach((task) => addTask(doQuadrant, task));
+  getTasks("schedule").forEach((task) => addTask(scheduleQuadrant, task));
+  getTasks("delegate").forEach((task) => addTask(delegateQuadrant, task));
+  getTasks("delete").forEach((task) => addTask(deleteQuadrant, task));
 })();
 
 /* event listeners */
@@ -103,6 +181,7 @@ const storeToLocalStorage = () => {
 doQuadrantBtn.addEventListener(`click`, () => {
   const task = prompt("Type the task:");
   if (!task) return;
+  if (getTasks("do").includes(task)) return;
   addTask(doQuadrant, task);
   storeQuadrantDo();
   refresh();
@@ -110,6 +189,7 @@ doQuadrantBtn.addEventListener(`click`, () => {
 scheduleQuadrantBtn.addEventListener(`click`, () => {
   const task = prompt("Type the task:");
   if (!task) return;
+  if (getTasks("schedule").includes(task)) return;
   addTask(scheduleQuadrant, task);
   storeQuadrantSchedule();
   refresh();
@@ -117,6 +197,7 @@ scheduleQuadrantBtn.addEventListener(`click`, () => {
 delegateQuadrantBtn.addEventListener(`click`, () => {
   const task = prompt("Type the task:");
   if (!task) return;
+  if (getTasks("delegate").includes(task)) return;
   addTask(delegateQuadrant, task);
   storeQuadrantDelegate();
   refresh();
@@ -124,6 +205,7 @@ delegateQuadrantBtn.addEventListener(`click`, () => {
 deleteQuadrantBtn.addEventListener(`click`, () => {
   const task = prompt("Type the task:");
   if (!task) return;
+  if (getTasks("delete").includes(task)) return;
   addTask(deleteQuadrant, task);
   storeQuadrantDelete();
   refresh();
@@ -155,7 +237,9 @@ const refresh = () => {
 
   containers.forEach((c) => {
     c.addEventListener(`dragover`, ({ clientY: y }) => {
+      c.classList.add("drop-here");
       const draggable = document.querySelector(`.dragging`);
+      if (draggable === null) return;
       if (c.children.length === 0) {
         c.appendChild(draggable);
         return;
@@ -173,6 +257,9 @@ const refresh = () => {
         draggable.style.marginBottom = `-${height + 10}px`;
         c.insertBefore(draggable, afterElement);
       }
+    });
+    c.addEventListener("dragleave", () => {
+      c.classList.remove("drop-here");
     });
   });
 

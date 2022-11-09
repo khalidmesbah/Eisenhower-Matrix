@@ -4,12 +4,11 @@ The Eisenhower Matrix, also referred to as Urgent-Important Matrix, helps you de
 # Features
 - [x] delete task
 - [x] shuffle task
-- [ ] daily tasks
-- [ ] add daily constants
-- [ ] add favIcon
-- [ ] scrollbar
+- [x] daily tasks
+- [x] add favIcon
+- [x] scrollbar
 
 # Tasks
-- [ ] enhance ui and ux
-- [ ] no duplicates in quadrants
+- [x] enhance ui and ux
+- [x] no duplicates in quadrants
 - [ ] 
